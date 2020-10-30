@@ -42,7 +42,7 @@ namespace Hangman
 				
 				while(true)
 				{
-					Write("Play again? (Y/N): ");
+					Write("\nPlay again? (Y/N): ");
 					
 					// Get char
 					char key = ReadKey().KeyChar;
