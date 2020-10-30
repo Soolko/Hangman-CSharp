@@ -21,17 +21,42 @@ namespace Hangman
 		internal static Game instance { get; private set; }
 		internal static void Main(string[] args)
 		{
+			static void ColourReset()
+			{
+				BackgroundColor = PreviousBackground;
+				ForegroundColor = PreviousForeground;
+			}
+			
 			// Setup
 			Console.Title = Title;
 			dictionary = new WordList(DictionaryPath);
 			
 			// Start game
-			instance = new Game(dictionary.PickWord());
-			instance.Start();
+			while(true)
+			{
+				instance = new Game(dictionary.PickWord());
+				instance.Start();
+				
+				// Game finished, ask to play again?
+				ColourReset();
+				
+				while(true)
+				{
+					Write("Play again? (Y/N): ");
+					
+					// Get char
+					char key = ReadKey().KeyChar;
+					string keyStr = key.ToString().ToUpper();
+					key = keyStr.ToCharArray()[0];
+
+					if(key == 'Y') break;
+					if(key == 'N') goto exitGameLoop;
+				}
+			}
+			exitGameLoop:
 			
 			// Reset console
-			BackgroundColor = PreviousBackground;
-			ForegroundColor = PreviousForeground;
+			ColourReset();
 		}
 		#endregion
 		
