@@ -132,7 +132,7 @@ namespace Hangman
 		
 		/**
 		 * Prints the current word,
-		 * masking out unguessed characters.
+		 * masking out characters that haven't been guessed yet.
 		 */
 		private void PrintWord()
 		{
