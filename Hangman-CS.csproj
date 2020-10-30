@@ -1,0 +1,16 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <OutputType>Exe</OutputType>
+        <TargetFramework>netcoreapp3.1</TargetFramework>
+        <RootNamespace>Hangman</RootNamespace>
+        <AssemblyName>Hangman</AssemblyName>
+    </PropertyGroup>
+    
+    <!-- Copy dictionary on build -->
+    <ItemGroup>
+        <None Update="dictionary.txt">
+            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </None>
+    </ItemGroup>
+</Project>
