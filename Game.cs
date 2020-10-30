@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using static System.Console;
 using static Hangman.ConsoleManager;
 
 namespace Hangman
@@ -25,31 +26,35 @@ namespace Hangman
 			dictionary = new WordList(DictionaryPath);
 			
 			// Start game
-			instance = new Game(dictionary);
+			instance = new Game(dictionary.PickWord());
 			instance.Start();
 			
 			// Reset console
-			SetBackground(PreviousBackground);
-			SetText(PreviousForeground);
+			BackgroundColor = PreviousBackground;
+			ForegroundColor = PreviousForeground;
 		}
 		#endregion
 		
-		/// Dictionary instance
-		private readonly WordList words;
-		
-		/// <summary>False while the instance is running.</summary>
-		public bool finished { get; private set; } = false;
 		
 		// Constructor
-		public Game(WordList dictionary) => words = dictionary;
+		public Game(string word) => this.word = word.ToUpper();
 		
+		/// False while the instance is running.
+		public bool finished { get; private set; } = false;
+
+
 		// Guesses & word
 		public string word { get; private set; }
 		private readonly List<char> guessesIncorrect = new List<char>();
 		private readonly List<char> guessesCorrect = new List<char>();
 		
+		
+		/// The amount of total guesses allowed.
 		private const int totalGuesses = 9;
+		
+		/// The amount of guesses left.
 		private int guessesLeft => totalGuesses - guessesIncorrect.Count;
+		
 		
 		// Game loop
 		public void Start()
@@ -57,30 +62,37 @@ namespace Hangman
 			word = dictionary.PickWord().ToUpper();
 			
 			// Setup console
-			SetBackground(ConsoleColor.Black);
-			SetText(ConsoleColor.White);
-			ClearNoBg();
+			BackgroundColor = ConsoleColor.Black;
+			ForegroundColor = ConsoleColor.White;
+			Clear();
 			
+			// Game loop
 			while(guessesLeft > 0)
 			{
-				PrintOverview();
-				char guess = RequestGuess();
+				PrintOverview();				// Print word & previous guesses
+				char guess = RequestGuess();	// Get the next guess
 				
+				// Check if guess has already been made
 				if(guessesIncorrect.Contains(guess) || guessesCorrect.Contains(guess))
 				{
 					WriteLine($"You have already guessed \"{guess.ToString()}\".");
 					continue;
 				}
 				
+				// Check if in word or not
 				if(!word.Contains(guess)) guessesIncorrect.Add(guess);
 				else
 				{
 					guessesCorrect.Add(guess);
-					if(CheckWord()) break;
+					if(CheckWord()) break;	// If word has been guessed, quit game loop.
 				}
 			}
 			
-			// Finished, print success/fail message
+			/*
+			 * Finished, print success/fail message dependent on whether guesses have ran out or not.
+			 * This can only be reached if guesses have ran out,
+			 * or the loop is broken from the word being guessed.
+			 */
 			WriteLine("");
 			WriteLine(guessesLeft == 0 ? "You ran out of guesses." : "You win.");
 			WriteLine($"The word was \"{word}\".");
@@ -124,21 +136,21 @@ namespace Hangman
 		 */
 		private void PrintWord()
 		{
-			ConsoleColor originalBg = Console.BackgroundColor;
-			ConsoleColor originalTxt = Console.ForegroundColor;
+			ConsoleColor originalBg = BackgroundColor;
+			ConsoleColor originalTxt = ForegroundColor;
 			
 			foreach(char c in word)
 			{
 				bool guessed = guessesCorrect.Contains(c);
 				if(guessed)
 				{
-					SetBackground(ConsoleColor.White);
-					SetText(ConsoleColor.Black);
+					BackgroundColor = ConsoleColor.White;
+					ForegroundColor = ConsoleColor.Black;
 					Write(c.ToString());
 				}
 				
-				SetBackground(originalBg);
-				SetText(originalTxt);
+				BackgroundColor = originalBg;
+				ForegroundColor = originalTxt;
 				
 				if(!guessed) Write("_");
 				
@@ -165,15 +177,15 @@ namespace Hangman
 				foreach(char c in list)
 				{
 					// Set colour
-					SetBackground(bg);
-					SetText(txt);
+					BackgroundColor = bg;
+					ForegroundColor = txt;
 					
 					// Print character
 					Write(c.ToString());
 					
 					// Set colour back
-					SetBackground(originalBg);
-					SetText(originalTxt);
+					BackgroundColor = originalBg;
+					ForegroundColor = originalTxt;
 					
 					// Print space
 					Write(" ");
@@ -204,8 +216,8 @@ namespace Hangman
 				bgColour = ConsoleColor.Green;
 				txtColour = ConsoleColor.White;
 			}
-			SetBackground(bgColour);
-			SetText(txtColour);
+			BackgroundColor = bgColour;
+			ForegroundColor = txtColour;
 			
 			Write
 			(
@@ -214,8 +226,8 @@ namespace Hangman
 				:	$"({guessesLeft.ToString()} guess left)"
 			);
 			
-			SetBackground(originalBg);
-			SetText(originalTxt);
+			BackgroundColor = originalBg;
+			ForegroundColor = originalTxt;
 		}
 	}
 }
